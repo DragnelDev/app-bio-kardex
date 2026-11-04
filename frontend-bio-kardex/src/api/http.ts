@@ -55,7 +55,8 @@ http.interceptors.response.use(
   (r) => r,
   async (error: AxiosError) => {
     const original = error.config as Reintentable | undefined
-    const esAuth = original?.url?.includes('/auth/login') || original?.url?.includes('/auth/refresh')
+    const esAuth =
+      original?.url?.includes('/auth/login') || original?.url?.includes('/auth/refresh')
     if (error.response?.status === 401 && original && !original._reintentada && !esAuth) {
       original._reintentada = true
       try {

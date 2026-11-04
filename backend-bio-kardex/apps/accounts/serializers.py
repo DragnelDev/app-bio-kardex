@@ -10,7 +10,7 @@ from .models import Rol, Usuario
 class UsuarioSerializer(serializers.ModelSerializer):
     """Lectura del usuario autenticado (endpoint /me)."""
 
-    sucursales = SucursalSerializer(many=True, read_only=True)
+    sucursales = serializers.SerializerMethodField()
 
     class Meta:
         model = Usuario
@@ -26,6 +26,13 @@ class UsuarioSerializer(serializers.ModelSerializer):
             "sucursales",
         ]
         read_only_fields = fields
+
+    def get_sucursales(self, obj):
+        """El administrador opera en todas las sucursales activas."""
+        from apps.branches.models import Sucursal
+
+        qs = Sucursal.objects.filter(activa=True) if obj.es_admin else obj.sucursales.all()
+        return SucursalSerializer(qs, many=True).data
 
 
 class UsuarioAdminSerializer(serializers.ModelSerializer):

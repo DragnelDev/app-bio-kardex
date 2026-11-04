@@ -8,6 +8,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/auth/", include("apps.accounts.urls")),
     path("api/", include("apps.branches.urls")),
+    path("api/", include("apps.catalog.urls")),
+    path("api/", include("apps.inventory.urls")),
+    path("api/", include("apps.cash.urls")),
+    path("api/", include("apps.sales.urls")),
+    path("api/", include("apps.payments.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

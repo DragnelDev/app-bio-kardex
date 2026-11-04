@@ -1,4 +1,7 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from apps.core.permissions import EsAdminOSoloLectura
 
@@ -18,3 +21,9 @@ class SucursalViewSet(viewsets.ModelViewSet):
         if user.es_admin:
             return qs
         return qs.filter(usuarios=user)
+
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def destinos(self, request):
+        """Todas las sucursales activas (para elegir destino de un traspaso)."""
+        datos = Sucursal.objects.filter(activa=True).values("id", "codigo", "nombre")
+        return Response(list(datos))

@@ -34,9 +34,61 @@
 
 body {
   @apply bg-page text-slate-800 antialiased dark:bg-page-dark dark:text-slate-100;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 .card {
   @apply rounded-xl border border-slate-200 bg-surface shadow-sm dark:border-slate-700 dark:bg-surface-dark;
+}
+
+/* Inputs y botones reutilizables */
+.input {
+  @apply w-full rounded-lg border border-slate-300 bg-transparent px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30 dark:border-slate-600;
+}
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50;
+}
+.btn-primary {
+  @apply btn bg-brand-500 text-white hover:bg-brand-600;
+}
+.btn-ghost {
+  @apply btn border border-slate-300 hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700;
+}
+.btn-danger {
+  @apply btn bg-danger text-white hover:opacity-90;
+}
+.th {
+  @apply px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400;
+}
+.td {
+  @apply px-3 py-2 text-sm;
+}
+
+/* Ticket de venta: al imprimir solo se ve el ticket (papel termico 80 mm) */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .ticket,
+  .ticket * {
+    visibility: visible;
+  }
+  .ticket {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    color: #000;
+    background: #fff;
+  }
+}
+
+/* Define la utilidad personalizada btn para Tailwind v4 */
+@utility btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors; /* Ajusta esto a tus estilos base de botones */
 }

@@ -5,8 +5,14 @@ declare module 'vue-router' {
   interface RouteMeta {
     publica?: boolean
     roles?: Rol[]
+    titulo?: string
+    icono?: string
+    menu?: boolean
   }
 }
+
+const GESTION: Rol[] = ['regente', 'almacenero']
+const MOSTRADOR: Rol[] = ['cajero', 'regente']
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,6 +31,59 @@ const router = createRouter({
           path: '',
           name: 'dashboard',
           component: () => import('@/views/DashboardView.vue'),
+          meta: { titulo: 'Inicio', icono: 'pi-home', menu: true },
+        },
+        {
+          path: 'pos',
+          name: 'pos',
+          component: () => import('@/views/PosView.vue'),
+          meta: {
+            titulo: 'Punto de venta',
+            icono: 'pi-shopping-cart',
+            roles: MOSTRADOR,
+            menu: true,
+          },
+        },
+        {
+          path: 'ventas',
+          name: 'ventas',
+          component: () => import('@/views/VentasView.vue'),
+          meta: { titulo: 'Ventas', icono: 'pi-receipt', roles: MOSTRADOR, menu: true },
+        },
+        {
+          path: 'caja',
+          name: 'caja',
+          component: () => import('@/views/CajaView.vue'),
+          meta: { titulo: 'Caja', icono: 'pi-wallet', roles: MOSTRADOR, menu: true },
+        },
+        {
+          path: 'catalogo',
+          name: 'catalogo',
+          component: () => import('@/views/CatalogoView.vue'),
+          meta: { titulo: 'Catalogo', icono: 'pi-box', roles: GESTION, menu: true },
+        },
+        {
+          path: 'inventario',
+          name: 'inventario',
+          component: () => import('@/views/InventarioView.vue'),
+          meta: { titulo: 'Inventario', icono: 'pi-database', roles: GESTION, menu: true },
+        },
+        {
+          path: 'kardex',
+          name: 'kardex',
+          component: () => import('@/views/KardexView.vue'),
+          meta: { titulo: 'Kardex', icono: 'pi-list', roles: GESTION, menu: true },
+        },
+        {
+          path: 'traspasos',
+          name: 'traspasos',
+          component: () => import('@/views/TraspasosView.vue'),
+          meta: {
+            titulo: 'Traspasos',
+            icono: 'pi-arrow-right-arrow-left',
+            roles: GESTION,
+            menu: true,
+          },
         },
       ],
     },
@@ -42,8 +101,7 @@ router.beforeEach(async (to) => {
   if (!auth.autenticado) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
-  const roles = to.meta.roles
-  if (roles && !auth.esAdmin && !roles.includes(auth.usuario!.rol)) {
+  if (!auth.puede(to.meta.roles)) {
     return { name: 'dashboard' }
   }
   return true

@@ -35,6 +35,11 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.branches",
+    "apps.catalog",
+    "apps.inventory",
+    "apps.cash",
+    "apps.sales",
+    "apps.payments",
 ]
 
 MIDDLEWARE = [
@@ -108,7 +113,8 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "apps.core.pagination.PaginacionEstandar",
+    "EXCEPTION_HANDLER": "apps.core.exceptions.manejador_excepciones",
     "PAGE_SIZE": 25,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }

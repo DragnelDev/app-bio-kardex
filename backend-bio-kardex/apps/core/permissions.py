@@ -39,3 +39,25 @@ class EsAdmin(BasePermission):
     def has_permission(self, request, view):
         user = request.user
         return bool(user and user.is_authenticated and user.is_active and user.es_admin)
+
+
+class EscrituraPorRoles(BasePermission):
+    """Lectura para cualquier usuario autenticado; escritura solo para los roles indicados.
+
+    El administrador siempre puede escribir. Uso:
+        permission_classes = [EscrituraPorRoles.con("regente", "almacenero")]
+    """
+
+    roles_escritura: tuple[str, ...] = ()
+
+    @classmethod
+    def con(cls, *roles: str):
+        return type("EscrituraPorRolesConfigurado", (cls,), {"roles_escritura": roles})
+
+    def has_permission(self, request, view):
+        user = request.user
+        if not (user and user.is_authenticated and user.is_active):
+            return False
+        if request.method in SAFE_METHODS:
+            return True
+        return user.es_admin or user.rol in self.roles_escritura

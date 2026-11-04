@@ -41,6 +41,13 @@ export const useAuthStore = defineStore('auth', () => {
     () => usuario.value?.sucursales.find((s) => s.id === sucursalActivaId.value) ?? null,
   )
 
+  /** true si el usuario es admin o su rol esta en la lista (sin lista = cualquiera). */
+  function puede(roles?: Rol[]): boolean {
+    if (!usuario.value) return false
+    if (!roles || roles.length === 0) return true
+    return usuario.value.rol === 'admin' || roles.includes(usuario.value.rol)
+  }
+
   function fijarUsuario(u: Usuario) {
     usuario.value = u
     let guardada: number | null = null
@@ -98,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
     nombre,
     sucursalActiva,
     sucursalActivaId,
+    puede,
     login,
     restaurar,
     logout,
