@@ -1,0 +1,103 @@
+from django.contrib.auth.password_validation import validate_password
+from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from apps.branches.serializers import SucursalSerializer
+
+from .models import Rol, Usuario
+
+
+class UsuarioSerializer(serializers.ModelSerializer):
+    """Lectura del usuario autenticado (endpoint /me)."""
+
+    sucursales = SucursalSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Usuario
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "rol",
+            "ci",
+            "telefono",
+            "sucursales",
+        ]
+        read_only_fields = fields
+
+
+class UsuarioAdminSerializer(serializers.ModelSerializer):
+    """CRUD de usuarios por el administrador."""
+
+    password = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = Usuario
+        fields = [
+            "id",
+            "username",
+            "password",
+            "first_name",
+            "last_name",
+            "email",
+            "rol",
+            "ci",
+            "telefono",
+            "sucursales",
+            "is_active",
+        ]
+        read_only_fields = ["id"]
+
+    def validate_rol(self, value):
+        if value not in Rol.values:
+            raise serializers.ValidationError("Rol invalido.")
+        return value
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
+
+    def validate(self, attrs):
+        if self.instance is None and not attrs.get("password"):
+            raise serializers.ValidationError(
+                {"password": "La contrasena es obligatoria al crear un usuario."}
+            )
+        return attrs
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        sucursales = validated_data.pop("sucursales", [])
+        user = Usuario(**validated_data)
+        user.set_password(password)
+        user.save()
+        user.sucursales.set(sucursales)
+        return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        sucursales = validated_data.pop("sucursales", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if password:
+            instance.set_password(password)
+        instance.save()
+        if sucursales is not None:
+            instance.sucursales.set(sucursales)
+        return instance
+
+
+class LoginSerializer(TokenObtainPairSerializer):
+    """Devuelve ademas del par de tokens los datos del usuario."""
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["rol"] = user.rol
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data["usuario"] = UsuarioSerializer(self.user).data
+        return data
