@@ -1,35 +1,42 @@
-@import './base.css';
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+/* El modo oscuro se activa con la clase .dark en <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-300: #6ee7b7;
+  --color-brand-400: #34d399;
+  --color-brand-500: #10b981; /* primario */
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+
+  --color-danger: #ef4444; /* lotes vencidos / bloqueados */
+  --color-warn: #f59e0b; /* lotes proximos a vencer */
+
+  --color-page: #f8fafc;
+  --color-surface: #ffffff;
+  --color-page-dark: #0f172a;
+  --color-surface-dark: #1e293b;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+:root {
+  color-scheme: light;
+}
+:root.dark {
+  color-scheme: dark;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+body {
+  @apply bg-page text-slate-800 antialiased dark:bg-page-dark dark:text-slate-100;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+.card {
+  @apply rounded-xl border border-slate-200 bg-surface shadow-sm dark:border-slate-700 dark:bg-surface-dark;
 }

@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="">
+<!doctype html>
+<html lang="es">
   <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BioKardex</title>
+    <script>
+      // Aplica el tema antes del primer pintado para evitar parpadeo.
+      try {
+        var t = localStorage.getItem('bk-theme')
+        var dark = t ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="app"></div>
