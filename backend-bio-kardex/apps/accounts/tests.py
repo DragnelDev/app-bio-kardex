@@ -1,3 +1,5 @@
+from django.core.management import call_command, CommandError
+from django.test import override_settings
 import pytest
 from rest_framework.test import APIClient
 
@@ -107,3 +109,53 @@ def test_admin_crea_usuario_con_sucursales(admin, sucursales):
 
 def test_cajero_no_gestiona_usuarios(cajero):
     assert autenticado("caja1").get("/api/auth/usuarios/").status_code == 403
+
+
+@override_settings(
+    DEBUG=True,
+    DEV_ADMIN_USERNAME="devadmin",
+    DEV_ADMIN_EMAIL="devadmin@example.com",
+    DEV_ADMIN_PASSWORD="Desarrollo-Seguro-123!",
+)
+def test_create_dev_admin_crea_superusuario():
+    call_command("create_dev_admin")
+
+    admin = Usuario.objects.get(username="devadmin")
+    assert admin.is_superuser
+    assert admin.is_staff
+    assert admin.rol == Rol.ADMIN
+    assert admin.email == "devadmin@example.com"
+    assert admin.check_password("Desarrollo-Seguro-123!")
+
+
+@override_settings(
+    DEBUG=True,
+    DEV_ADMIN_USERNAME="devadmin",
+    DEV_ADMIN_EMAIL="devadmin@example.com",
+    DEV_ADMIN_PASSWORD="Desarrollo-Seguro-123!",
+)
+def test_create_dev_admin_no_cambia_un_superusuario_existente():
+    admin = Usuario.objects.create_superuser(
+        username="devadmin",
+        email="devadmin@example.com",
+        password="Otra-Clave-Segura-456!",
+        rol=Rol.ADMIN,
+    )
+
+    call_command("create_dev_admin")
+
+    admin.refresh_from_db()
+    assert admin.check_password("Otra-Clave-Segura-456!")
+    assert Usuario.objects.filter(username="devadmin").count() == 1
+
+
+@override_settings(DEBUG=False)
+def test_create_dev_admin_no_se_ejecuta_fuera_de_desarrollo():
+    with pytest.raises(CommandError, match="DEBUG=True"):
+        call_command("create_dev_admin")
+
+
+@override_settings(DEBUG=True, DEV_ADMIN_PASSWORD="")
+def test_create_dev_admin_requiere_password_configurado():
+    with pytest.raises(CommandError, match="DEV_ADMIN_PASSWORD"):
+        call_command("create_dev_admin")

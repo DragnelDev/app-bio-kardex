@@ -15,6 +15,9 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+DEV_ADMIN_USERNAME = env("DEV_ADMIN_USERNAME", default="admin")
+DEV_ADMIN_EMAIL = env("DEV_ADMIN_EMAIL", default="admin@localhost")
+DEV_ADMIN_PASSWORD = env("DEV_ADMIN_PASSWORD", default="")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
