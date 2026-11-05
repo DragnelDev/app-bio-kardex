@@ -10,10 +10,12 @@ from .serializers import SucursalSerializer
 
 
 class SucursalViewSet(viewsets.ModelViewSet):
-    """Admin: CRUD completo. Resto de roles: solo ven sus sucursales asignadas."""
+    """Admin: crea y edita. Resto de roles: solo ven sus sucursales asignadas."""
 
     serializer_class = SucursalSerializer
     permission_classes = [EsAdminOSoloLectura]
+    # Las sucursales tienen stock y ventas: se desactivan (activa=false), no se borran.
+    http_method_names = ["get", "post", "put", "patch", "head", "options"]
 
     def get_queryset(self):
         user = self.request.user

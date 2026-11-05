@@ -71,6 +71,15 @@ class UsuarioAdminSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"password": "La contrasena es obligatoria al crear un usuario."}
             )
+        # Un administrador no puede quitarse a si mismo el acceso ni el rol.
+        request = self.context.get("request")
+        if self.instance is not None and request and request.user.pk == self.instance.pk:
+            if attrs.get("is_active") is False:
+                raise serializers.ValidationError(
+                    {"is_active": "No puedes desactivar tu propio usuario."}
+                )
+            if "rol" in attrs and attrs["rol"] != self.instance.rol:
+                raise serializers.ValidationError({"rol": "No puedes cambiar tu propio rol."})
         return attrs
 
     def create(self, validated_data):
@@ -108,3 +117,17 @@ class LoginSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
         data["usuario"] = UsuarioSerializer(self.user).data
         return data
+
+
+class CambiarClaveEntrada(serializers.Serializer):
+    clave_actual = serializers.CharField(write_only=True)
+    clave_nueva = serializers.CharField(write_only=True)
+
+    def validate_clave_actual(self, value):
+        if not self.context["request"].user.check_password(value):
+            raise serializers.ValidationError("La contrasena actual es incorrecta.")
+        return value
+
+    def validate_clave_nueva(self, value):
+        validate_password(value, self.context["request"].user)
+        return value

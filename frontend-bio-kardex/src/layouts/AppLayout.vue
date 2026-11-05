@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import CambiarClaveModal from '@/components/CambiarClaveModal.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
+const mostrarClave = ref(false)
+
+/** Sin sucursal solo se puede entrar a Administracion (para crear la primera). */
+const sinSucursal = computed(() => !auth.sucursalActiva && route.name !== 'administracion')
 
 const enlaces = computed(() =>
   router
@@ -62,6 +68,15 @@ function cambiarSucursal(e: Event) {
           <button
             type="button"
             class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+            aria-label="Cambiar contrasena"
+            title="Cambiar contrasena"
+            @click="mostrarClave = true"
+          >
+            <i class="pi pi-key" aria-hidden="true"></i>
+          </button>
+          <button
+            type="button"
+            class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
             aria-label="Cerrar sesion"
             @click="salir"
           >
@@ -86,10 +101,19 @@ function cambiarSucursal(e: Event) {
     </header>
 
     <main class="mx-auto max-w-7xl p-4">
-      <p v-if="!auth.sucursalActiva" class="card mb-4 border-warn p-4 text-sm" role="alert">
-        No tienes una sucursal asignada. Pide a un administrador que te asigne una.
+      <p v-if="sinSucursal" class="card mb-4 border-warn p-4 text-sm" role="alert">
+        <template v-if="auth.esAdmin">
+          No hay sucursales activas. Crea la primera en
+          <RouterLink :to="{ name: 'administracion' }" class="font-medium text-brand-600 underline"
+            >Administracion</RouterLink
+          >.
+        </template>
+        <template v-else
+          >No tienes una sucursal asignada. Pide a un administrador que te asigne una.</template
+        >
       </p>
       <RouterView v-else :key="auth.sucursalActivaId ?? 0" />
     </main>
+    <CambiarClaveModal v-if="mostrarClave" @cerrar="mostrarClave = false" />
   </div>
 </template>

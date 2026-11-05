@@ -91,6 +91,12 @@ export const useAuthStore = defineStore('auth', () => {
     cargado.value = true
   }
 
+  /** Vuelve a leer el usuario (por ejemplo tras crear una sucursal). */
+  async function refrescarUsuario() {
+    const { data } = await http.get('/auth/me/')
+    fijarUsuario(data as Usuario)
+  }
+
   function logout() {
     borrarTokens()
     usuario.value = null
@@ -108,6 +114,7 @@ export const useAuthStore = defineStore('auth', () => {
     puede,
     login,
     restaurar,
+    refrescarUsuario,
     logout,
     elegirSucursal,
   }

@@ -11,6 +11,8 @@ Sistema integral de farmacia: Django + DRF (backend) y Vue 3 + Tailwind (fronten
 | 3    | Inventario: lotes con vencimiento, FEFO transaccional, Kardex inalterable, bajas, ajustes, bloqueos, traspasos entre sucursales |
 | 4    | Caja: apertura con fondo inicial, arqueo de cierre (efectivo y QR por separado)                                                 |
 | 5    | POS: venta fraccionada, pagos mixtos, vuelto, comprobante QR, recetas, devoluciones, anulaciones, recibo imprimible             |
+| 6    | Reportes (regente/admin): ventas, stock valorizado a costo y libro de controlados, con exportacion a CSV                        |
+| 7    | Administracion (admin): usuarios, sucursales y cajas desde la app; cambio de contrasena propio                                  |
 
 ## Puesta en marcha
 
@@ -44,8 +46,9 @@ solo, despues de cada `migrate`.
 
 ## Primeros pasos en la app
 
-1. Entra a `/admin/` con el superusuario, crea una **Sucursal** (y otras si hay varias) y
-   crea usuarios con su rol y sucursales. El administrador ve todas las sucursales.
+1. Entra a la app con el superusuario y abre **Administracion**: crea la primera **sucursal**,
+   luego los **usuarios** (rol y sucursales donde operan) y las **cajas** de cada sucursal.
+   El administrador ve todas las sucursales. Usuarios y sucursales no se borran, se desactivan.
 2. En la app: **Catalogo** -> crea productos y sus presentaciones (caja, blister, unidad)
    con factor y precio (con IVA incluido).
 3. **Inventario -> Ingreso de mercaderia** para cargar lotes con vencimiento.
@@ -68,8 +71,8 @@ solo, despues de cada `migrate`.
 
 ## API (resumen)
 
-`/api/auth/*`, `/api/sucursales/`, `/api/productos/`, `/api/presentaciones/`,
+`/api/auth/*` (login, refresh, me, cambiar-clave, usuarios), `/api/sucursales/`, `/api/productos/`, `/api/presentaciones/`,
 `/api/precios-sucursal/`, `/api/inventario/{stock,alertas,resumen,ingresos,bajas,ajustes,bloqueos,kardex,traspasos}/`,
 `/api/cajas/`, `/api/turnos/` (+ `actual`, `cerrar`), `/api/pos/buscar/`,
 `/api/ventas/` (+ `anular`, `devolucion`, `receta`), `/api/pagos/<id>/comprobante/`,
-`/api/clientes/`. Documentacion interactiva en `/api/docs/`.
+`/api/clientes/`, `/api/reportes/{ventas,valorizado,controlados}/` (agrega `?formato=csv`). Documentacion interactiva en `/api/docs/`.

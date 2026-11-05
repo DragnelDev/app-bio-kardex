@@ -75,6 +75,18 @@ const router = createRouter({
           meta: { titulo: 'Kardex', icono: 'pi-list', roles: GESTION, menu: true },
         },
         {
+          path: 'administracion',
+          name: 'administracion',
+          component: () => import('@/views/AdminView.vue'),
+          meta: { titulo: 'Administracion', icono: 'pi-cog', roles: ['admin'], menu: true },
+        },
+        {
+          path: 'reportes',
+          name: 'reportes',
+          component: () => import('@/views/ReportesView.vue'),
+          meta: { titulo: 'Reportes', icono: 'pi-chart-bar', roles: ['regente'], menu: true },
+        },
+        {
           path: 'traspasos',
           name: 'traspasos',
           component: () => import('@/views/TraspasosView.vue'),
